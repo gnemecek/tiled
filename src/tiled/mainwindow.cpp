@@ -116,6 +116,8 @@
 #include <QUndoGroup>
 #include <QUndoStack>
 #include <QUndoView>
+#include <QInputDialog> ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#include <iostream> ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using namespace Tiled;
 using namespace Tiled::Internal;
@@ -385,6 +387,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     menuBar()->insertMenu(mUi->menuHelp->menuAction(), mLayerMenu);
 
+    //QAction *actionSearchTileset = new QAction("Search", mUi); /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     connect(mUi->actionNew, SIGNAL(triggered()), SLOT(newMap()));
     connect(mUi->actionOpen, SIGNAL(triggered()), SLOT(openFile()));
     connect(mUi->actionClearRecentFiles, SIGNAL(triggered()),
@@ -426,6 +430,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     connect(mUi->actionNewTileset, SIGNAL(triggered()), SLOT(newTileset()));
     connect(mUi->actionAddExternalTileset, SIGNAL(triggered()),
             SLOT(addExternalTileset()));
+    //connect(actionSearchTileset, SIGNAL(triggered()), SLOT(searchTileset())); ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     connect(mUi->actionResizeMap, SIGNAL(triggered()), SLOT(resizeMap()));
     connect(mUi->actionOffsetMap, SIGNAL(triggered()), SLOT(offsetMap()));
     connect(mUi->actionMapProperties, SIGNAL(triggered()),
@@ -469,6 +474,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     setThemeIcon(mUi->actionZoomOut, "zoom-out");
     setThemeIcon(mUi->actionZoomNormal, "zoom-original");
     setThemeIcon(mUi->actionNewTileset, "document-new");
+    //setThemeIcon(mUi->actionSearchTileset, "search-tileset"); ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     setThemeIcon(mUi->actionResizeMap, "document-page-setup");
     setThemeIcon(mUi->actionMapProperties, "document-properties");
     setThemeIcon(mUi->actionDocumentation, "help-contents");
@@ -1373,6 +1379,25 @@ void MainWindow::addExternalTileset()
     for (const SharedTileset &tileset : tilesets)
         undoStack->push(new AddTileset(mMapDocument, tileset));
     undoStack->endMacro();
+}
+
+void MainWindow::searchTileset() ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+{
+    // open dialog box
+    QInputDialog *searchdialog = new QInputDialog(this);
+    // get name from dialog box
+    bool ok;
+    QString name = searchdialog->getText(this, tr("Search for Tile"), tr("Name:"), QLineEdit::Normal, QDir::home().dirName(), &ok);
+    std::string name_str = name.toStdString(); // convert to std::string for output
+    // find the index
+    int index_found = searchTilesetHelper(name);
+    // output answer
+    std::cout << "Tile: " << name_str << " was found at ID: " << index_found << "." << std::endl;
+}
+
+int MainWindow::searchTilesetHelper(QString name)
+{
+    return 7;
 }
 
 void MainWindow::resizeMap()
